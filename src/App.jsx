@@ -9,6 +9,7 @@ import narcosBackground from './assets/images/narcos-bg.jpg';
 import narcosLogo from './assets/images/narcos-logo.png';
 
 import './App.scss';
+import './pagination.css';
 
 class App extends Component {
   constructor(props) {
@@ -23,8 +24,7 @@ class App extends Component {
           <UserProfile />
         </header>
         <Hero />
-        <TitleList title="All TV picks" content='tv' />
-        {/* <TitleList title="Trending now" content='movie' /> */}
+        <TitleList title="Film picks"/>
       </div>
     );
   }
@@ -88,7 +88,6 @@ class HeroButton extends Component {
   }
 }
 
-
 class TitleList extends Component {
   constructor(props) {
     super(props);
@@ -101,16 +100,11 @@ class TitleList extends Component {
   }
 
   loadContent() {
-    let data;
-    if (this.props.content === 'tv') {
-      data = tvData;
-    } else {
-      data = movieData;
-    }
+    let data = [...tvData.results, ...movieData.results];
 
-    this.state.data = data;
-    this.state.totalPages = data.results.length;
-    this.state.page = 4;
+    this.setState({data: data});
+    this.setState({page: 4});
+    this.setState({totalPages: data.length});
   }
 
   componentWillReceiveProps(nextProps) {
@@ -138,9 +132,11 @@ class TitleList extends Component {
   }
 
   handleNext = () => {
+    console.log('total', this.state.totalPages);
     if (this.state.page < this.state.totalPages){
       this.setState({page: this.state.page + 4});
     }
+    
   }
 
   render = () => {
@@ -154,12 +150,9 @@ class TitleList extends Component {
       end = this.state.page;
     }
 
-    console.log(start, end, this.state.totalPages);
-
     var titles = '';
-    if (this.state.data.results) {
-      titles = this.state.data.results.slice(start, end).map(function(title, i) {        
-
+    if (this.state.data) {
+      titles = this.state.data.slice(start, end).map(function(title, i) {        
         if (i < 4) {
           var name = '';
           var backDrop = `http://image.tmdb.org/t/p/original${title.backdrop_path}`;
@@ -185,17 +178,35 @@ class TitleList extends Component {
       }); 
     } 
 
-    let previous = '<<';
-    let next = '>>';
+    let arr = [];
+    let count = Math.ceil(this.state.totalPages / 4);
+    let remain = this.state.totalPages - count * 4;
+
+    for(let i = 0; i < count; i++){
+      arr.push(i+1);
+    }
+
+    var pagines = '';
+    let n = this.state.page/4;
+    console.log(n, this.state.page);
+    pagines = arr.map(function(i){
+      
+      return(
+        <a id={i} className={i == n? 'active' : 'none'}>{i}</a>
+      );
+    });
 
     return (
       <div ref="titlecategory" className="TitleList" data-loaded={this.state.mounted}>
         <div className="Title">
           <h1>{this.props.title}</h1>
+          <div class="pagination">
+            <button onClick={this.handlePrevious}>&laquo;</button>
+              {pagines}
+            <button onClick={this.handleNext}>&raquo;</button>
+          </div>
           <div className="titles-wrapper">
-            <button onClick={this.handlePrevious}>{previous}</button>
               {titles}
-            <button onClick={this.handleNext}>{next}</button>
           </div>
         </div>
       </div>

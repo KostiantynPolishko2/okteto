@@ -30562,6 +30562,10 @@ module.exports = reloadCSS;
 var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"pagination.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"App.jsx":[function(require,module,exports) {
 "use strict";
 
@@ -30577,6 +30581,7 @@ var _user = _interopRequireDefault(require("./assets/images/user.jpg"));
 var _narcosBg = _interopRequireDefault(require("./assets/images/narcos-bg.jpg"));
 var _narcosLogo = _interopRequireDefault(require("./assets/images/narcos-logo.png"));
 require("./App.scss");
+require("./pagination.css");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -30592,8 +30597,7 @@ class App extends _react.Component {
     }, /*#__PURE__*/_react.default.createElement("div", {
       className: "logo"
     }, "Movies"), /*#__PURE__*/_react.default.createElement(UserProfile, null)), /*#__PURE__*/_react.default.createElement(Hero, null), /*#__PURE__*/_react.default.createElement(TitleList, {
-      title: "All TV picks",
-      content: "tv"
+      title: "Film picks"
     }));
   }
 }
@@ -30669,15 +30673,16 @@ class TitleList extends _react.Component {
     };
   }
   loadContent() {
-    let data;
-    if (this.props.content === 'tv') {
-      data = _tv.default;
-    } else {
-      data = _movie.default;
-    }
-    this.state.data = data;
-    this.state.totalPages = data.results.length;
-    this.state.page = 4;
+    let data = [..._tv.default.results, ..._movie.default.results];
+    this.setState({
+      data: data
+    });
+    this.setState({
+      page: 4
+    });
+    this.setState({
+      totalPages: data.length
+    });
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.content !== this.props.content && nextProps.content !== '') {
@@ -30705,6 +30710,7 @@ class TitleList extends _react.Component {
     }
   };
   handleNext = () => {
+    console.log('total', this.state.totalPages);
     if (this.state.page < this.state.totalPages) {
       this.setState({
         page: this.state.page + 4
@@ -30719,10 +30725,9 @@ class TitleList extends _react.Component {
     } else {
       end = this.state.page;
     }
-    console.log(start, end, this.state.totalPages);
     var titles = '';
-    if (this.state.data.results) {
-      titles = this.state.data.results.slice(start, end).map(function (title, i) {
+    if (this.state.data) {
+      titles = this.state.data.slice(start, end).map(function (title, i) {
         if (i < 4) {
           var name = '';
           var backDrop = `http://image.tmdb.org/t/p/original${title.backdrop_path}`;
@@ -30745,8 +30750,21 @@ class TitleList extends _react.Component {
         }
       });
     }
-    let previous = '<<';
-    let next = '>>';
+    let arr = [];
+    let count = Math.ceil(this.state.totalPages / 4);
+    let remain = this.state.totalPages - count * 4;
+    for (let i = 0; i < count; i++) {
+      arr.push(i + 1);
+    }
+    var pagines = '';
+    let n = this.state.page / 4;
+    console.log(n, this.state.page);
+    pagines = arr.map(function (i) {
+      return /*#__PURE__*/_react.default.createElement("a", {
+        id: i,
+        className: i == n ? 'active' : 'none'
+      }, i);
+    });
     return /*#__PURE__*/_react.default.createElement("div", {
       ref: "titlecategory",
       className: "TitleList",
@@ -30754,12 +30772,14 @@ class TitleList extends _react.Component {
     }, /*#__PURE__*/_react.default.createElement("div", {
       className: "Title"
     }, /*#__PURE__*/_react.default.createElement("h1", null, this.props.title), /*#__PURE__*/_react.default.createElement("div", {
-      className: "titles-wrapper"
+      class: "pagination"
     }, /*#__PURE__*/_react.default.createElement("button", {
       onClick: this.handlePrevious
-    }, previous), titles, /*#__PURE__*/_react.default.createElement("button", {
+    }, "\xAB"), pagines, /*#__PURE__*/_react.default.createElement("button", {
       onClick: this.handleNext
-    }, next))));
+    }, "\xBB")), /*#__PURE__*/_react.default.createElement("div", {
+      className: "titles-wrapper"
+    }, titles)));
   };
 }
 class Item extends _react.Component {
@@ -30833,7 +30853,7 @@ class ListToggle extends _react.Component {
   }
 }
 var _default = exports.default = (0, _reactHotLoader.hot)(module)(App);
-},{"react":"../node_modules/react/index.js","react-hot-loader":"../node_modules/react-hot-loader/index.js","./data/tv.json":"data/tv.json","./data/movie.json":"data/movie.json","./assets/images/user.jpg":"assets/images/user.jpg","./assets/images/narcos-bg.jpg":"assets/images/narcos-bg.jpg","./assets/images/narcos-logo.png":"assets/images/narcos-logo.png","./App.scss":"App.scss"}],"index.scss":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-hot-loader":"../node_modules/react-hot-loader/index.js","./data/tv.json":"data/tv.json","./data/movie.json":"data/movie.json","./assets/images/user.jpg":"assets/images/user.jpg","./assets/images/narcos-bg.jpg":"assets/images/narcos-bg.jpg","./assets/images/narcos-logo.png":"assets/images/narcos-logo.png","./App.scss":"App.scss","./pagination.css":"pagination.css"}],"index.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
