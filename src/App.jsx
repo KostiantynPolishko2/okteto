@@ -23,8 +23,8 @@ class App extends Component {
           <UserProfile />
         </header>
         <Hero />
-        <TitleList title="Top TV picks for Cindy" content='tv' />
-        <TitleList title="Trending now" content='movie' />
+        <TitleList title="All TV picks" content='tv' />
+        {/* <TitleList title="Trending now" content='movie' /> */}
       </div>
     );
   }
@@ -94,7 +94,9 @@ class TitleList extends Component {
     super(props);
     this.state = { 
       data: [], 
-      mounted: false
+      mounted: false,
+      page: 0,
+      totalPages: 0,
     };
   }
 
@@ -105,7 +107,10 @@ class TitleList extends Component {
     } else {
       data = movieData;
     }
-    this.setState({ data: data });
+
+    this.state.data = data;
+    this.state.totalPages = data.results.length;
+    this.state.page = 4;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -126,10 +131,35 @@ class TitleList extends Component {
     }
   }
 
-  render() {
+  handlePrevious = () => {
+    if (this.state.page > 4){
+      this.setState({page: this.state.page - 4});
+    }
+  }
+
+  handleNext = () => {
+    if (this.state.page < this.state.totalPages){
+      this.setState({page: this.state.page + 4});
+    }
+  }
+
+  render = () => {
+    let start = this.state.page - 4;
+    let end = 0;
+
+    if(this.state.page > this.state.totalPages){
+      end = this.state.totalPages;
+    }
+    else{
+      end = this.state.page;
+    }
+
+    console.log(start, end, this.state.totalPages);
+
     var titles = '';
     if (this.state.data.results) {
-      titles = this.state.data.results.map(function(title, i) {
+      titles = this.state.data.results.slice(start, end).map(function(title, i) {        
+
         if (i < 4) {
           var name = '';
           var backDrop = `http://image.tmdb.org/t/p/original${title.backdrop_path}`;
@@ -154,12 +184,18 @@ class TitleList extends Component {
         }
       }); 
     } 
+
+    let previous = '<<';
+    let next = '>>';
+
     return (
       <div ref="titlecategory" className="TitleList" data-loaded={this.state.mounted}>
         <div className="Title">
           <h1>{this.props.title}</h1>
           <div className="titles-wrapper">
-            {titles}
+            <button onClick={this.handlePrevious}>{previous}</button>
+              {titles}
+            <button onClick={this.handleNext}>{next}</button>
           </div>
         </div>
       </div>

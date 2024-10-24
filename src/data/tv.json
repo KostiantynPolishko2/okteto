@@ -375,28 +375,6 @@
       "adult": false,
       "overview": "After a hunting expedition goes awry, a young caveman struggles against the elements to find his way home.",
       "release_date": "2018-08-17"
-    },
-    {
-      "vote_count": 400,
-      "id": 420814,
-      "video": false,
-      "vote_average": 7.5,
-      "title": "Christopher Robin",
-      "popularity": 79.54,
-      "poster_path": "/xR5w0he6czZkcAz459a4iPBqXGe.jpg",
-      "original_language": "en",
-      "original_title": "Christopher Robin",
-      "genre_ids": [
-        16,
-        12,
-        35,
-        10751,
-        14
-      ],
-      "backdrop_path": "/uDt8bQ4lGVlabEx5Gl2cPzvy6qz.jpg",
-      "adult": false,
-      "overview": "Working-class family man Christopher Robin encounters his childhood friend Winnie-the-Pooh, who helps him to rediscover the joys of life.",
-      "release_date": "2018-08-02"
     }
   ]
 }

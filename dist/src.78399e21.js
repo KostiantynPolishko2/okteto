@@ -30191,21 +30191,6 @@ module.exports = {
     "adult": false,
     "overview": "After a hunting expedition goes awry, a young caveman struggles against the elements to find his way home.",
     "release_date": "2018-08-17"
-  }, {
-    "vote_count": 400,
-    "id": 420814,
-    "video": false,
-    "vote_average": 7.5,
-    "title": "Christopher Robin",
-    "popularity": 79.54,
-    "poster_path": "/xR5w0he6czZkcAz459a4iPBqXGe.jpg",
-    "original_language": "en",
-    "original_title": "Christopher Robin",
-    "genre_ids": [16, 12, 35, 10751, 14],
-    "backdrop_path": "/uDt8bQ4lGVlabEx5Gl2cPzvy6qz.jpg",
-    "adult": false,
-    "overview": "Working-class family man Christopher Robin encounters his childhood friend Winnie-the-Pooh, who helps him to rediscover the joys of life.",
-    "release_date": "2018-08-02"
   }]
 };
 },{}],"data/movie.json":[function(require,module,exports) {
@@ -30607,11 +30592,8 @@ class App extends _react.Component {
     }, /*#__PURE__*/_react.default.createElement("div", {
       className: "logo"
     }, "Movies"), /*#__PURE__*/_react.default.createElement(UserProfile, null)), /*#__PURE__*/_react.default.createElement(Hero, null), /*#__PURE__*/_react.default.createElement(TitleList, {
-      title: "Top TV picks for Cindy",
+      title: "All TV picks",
       content: "tv"
-    }), /*#__PURE__*/_react.default.createElement(TitleList, {
-      title: "Trending now",
-      content: "movie"
     }));
   }
 }
@@ -30681,7 +30663,9 @@ class TitleList extends _react.Component {
     super(props);
     this.state = {
       data: [],
-      mounted: false
+      mounted: false,
+      page: 0,
+      totalPages: 0
     };
   }
   loadContent() {
@@ -30691,9 +30675,9 @@ class TitleList extends _react.Component {
     } else {
       data = _movie.default;
     }
-    this.setState({
-      data: data
-    });
+    this.state.data = data;
+    this.state.totalPages = data.results.length;
+    this.state.page = 4;
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.content !== this.props.content && nextProps.content !== '') {
@@ -30713,10 +30697,32 @@ class TitleList extends _react.Component {
       });
     }
   }
-  render() {
+  handlePrevious = () => {
+    if (this.state.page > 4) {
+      this.setState({
+        page: this.state.page - 4
+      });
+    }
+  };
+  handleNext = () => {
+    if (this.state.page < this.state.totalPages) {
+      this.setState({
+        page: this.state.page + 4
+      });
+    }
+  };
+  render = () => {
+    let start = this.state.page - 4;
+    let end = 0;
+    if (this.state.page > this.state.totalPages) {
+      end = this.state.totalPages;
+    } else {
+      end = this.state.page;
+    }
+    console.log(start, end, this.state.totalPages);
     var titles = '';
     if (this.state.data.results) {
-      titles = this.state.data.results.map(function (title, i) {
+      titles = this.state.data.results.slice(start, end).map(function (title, i) {
         if (i < 4) {
           var name = '';
           var backDrop = `http://image.tmdb.org/t/p/original${title.backdrop_path}`;
@@ -30739,6 +30745,8 @@ class TitleList extends _react.Component {
         }
       });
     }
+    let previous = '<<';
+    let next = '>>';
     return /*#__PURE__*/_react.default.createElement("div", {
       ref: "titlecategory",
       className: "TitleList",
@@ -30747,8 +30755,12 @@ class TitleList extends _react.Component {
       className: "Title"
     }, /*#__PURE__*/_react.default.createElement("h1", null, this.props.title), /*#__PURE__*/_react.default.createElement("div", {
       className: "titles-wrapper"
-    }, titles)));
-  }
+    }, /*#__PURE__*/_react.default.createElement("button", {
+      onClick: this.handlePrevious
+    }, previous), titles, /*#__PURE__*/_react.default.createElement("button", {
+      onClick: this.handleNext
+    }, next))));
+  };
 }
 class Item extends _react.Component {
   constructor(props) {
